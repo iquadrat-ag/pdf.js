@@ -199,7 +199,13 @@ PDFPrintService.prototype = {
           resolve();
           return;
         }
-        print.call(window);
+        // use execCommand, if available, because in IE
+        // window.print prints selected iframe, thus printing the whole
+        // page when viewer is loaded inside iframe
+        var result = window.document.execCommand('print', false, null);
+        if (!result) {
+          print.call(window);
+        }          
         // Delay promise resolution in case print() was not synchronous.
         setTimeout(resolve, 20); // Tidy-up.
       }, 0);
